@@ -12,6 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.mvi.databinding.FragmentFirstBinding
 import com.example.mvi.first.presentation.event.FirstScreenEvent
+import com.example.mvi.first.presentation.intent.FirstScreenOperationIntent
+import com.example.mvi.first.presentation.operation.NextActionArg
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -47,9 +49,18 @@ class FirstScreenFragment : Fragment() {
             .onEach(::react)
             .launchIn(lifecycleScope)
 
-        binding.refreshLayout.setOnRefreshListener { viewModel.onPullToRefresh() }
-        binding.buttonRetry.setOnClickListener { viewModel.onRetryButtonClick() }
-        binding.buttonFirst.setOnClickListener { viewModel.onNexButtonClick(it.hashCode()) }
+        binding.refreshLayout.setOnRefreshListener {
+            viewModel.handleUserIntent(FirstScreenOperationIntent.PULL_TO_REFRESH)
+        }
+        binding.buttonRetry.setOnClickListener {
+            viewModel.handleUserIntent(FirstScreenOperationIntent.INITIAL_LOADING)
+        }
+        binding.buttonFirst.setOnClickListener {
+            viewModel.handleUserIntent(
+                FirstScreenOperationIntent.NEXT_BUTTON_CLICK,
+                NextActionArg(it.hashCode())
+            )
+        }
     }
 
     override fun onDestroyView() {
